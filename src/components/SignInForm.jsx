@@ -100,7 +100,7 @@ const SignInForm = () => {
         <Divider />
         <CardFooter textAlign={"center"}>
           <Text as={"i"}>
-            Don't have an account ?{" "}
+            Don&apos;t have an account ?{" "}
             <Link href="/signup" textColor={"blue"}>
               Sign up
             </Link>
