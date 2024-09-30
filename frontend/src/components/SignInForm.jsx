@@ -1,21 +1,21 @@
+import { useState } from "react";
 import {
+  Text,
+  Heading,
+  Link,
   Button,
+  Stack,
+  Divider,
   Card,
+  CardHeader,
   CardBody,
   CardFooter,
-  CardHeader,
-  Divider,
   FormLabel,
-  Heading,
-  Input,
   InputGroup,
+  Input,
   InputRightElement,
-  Link,
-  Stack,
-  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignInForm = () => {
@@ -100,7 +100,7 @@ const SignInForm = () => {
         <Divider />
         <CardFooter textAlign={"center"}>
           <Text as={"i"}>
-            Don&apos;t have an account ?{" "}
+            Don't have an account ?{" "}
             <Link href="/signup" textColor={"blue"}>
               Sign up
             </Link>
