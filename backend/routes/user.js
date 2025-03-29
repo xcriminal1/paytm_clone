@@ -84,4 +84,59 @@ router.put("/", authMiddleware, async (req, res) => {
   });
 });
 
+router.get("/details", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.userId });
+    res.json({
+      user: {
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        exists: true,
+      },});
+  } catch {
+    res.json({
+      user: {
+        exists: false,
+      },
+    });
+  }
+  
+});
 
+router.get("/bulk", authMiddleware, async (req, res) => {
+  const filter = req.query.filter || "";
+  const users = await User.find({
+    $or: [
+      {
+        firstName: {
+          $regex: filter,
+          $options: "i",
+        },
+      },
+      {
+        lastName: {
+          $regex: filter,
+          $options: "i",
+        },
+      },
+    ],
+  });
+  //use filter to remove the requesting user from the array
+  res.json({
+    user: users.map((user) => ({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      _id: user._id,
+    })),
+  });
+});
+
+router.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to the user route",
+  });
+});
+
+module.exports = router;
