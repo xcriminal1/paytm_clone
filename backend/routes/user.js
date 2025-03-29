@@ -27,3 +27,61 @@ const updateSchema = zod.object({
   password: zod.string().optional(),
 });
 
+//all routes
+router.post("/signup", async (req, res) => {
+  const body = req.body;
+  const success = signupSchema.safeParse(body);
+  if (!success) {
+    return res.status(411).json({ message: "Invalid data" });
+  }
+
+  const user = await User.findOne({ username: body.username });
+  if (user) {
+    return res.status(411).json({ message: "User already exists" });
+  }
+
+  const dbUser = await User.create(body);
+  const userId = dbUser._id;
+  await Account.create({ userId: userId, balance: 1 + Math.random() * 1000 });
+  const token = jwt.sign({ userId: userId }, JWT_SECRET);
+  res.json({ message: "User created successfully", token: token });
+});
+
+router.post("/signin", async (req, res) => {
+  const body = req.body;
+  const success = signinSchema.safeParse(body);
+  if (!success) {
+    return res.status(411).json({ message: "Error while loggin in" });
+  }
+  const existingUser = await User.findOne({
+    username: body.username,
+    password: body.password,
+  });
+
+  if (existingUser) {
+    const token = jwt.sign({ userId: existingUser._id }, JWT_SECRET);
+    res.json({ message: "User logged in successfully", token: token });
+  } else return res.status(411).json({ message: "Error while logging in" });
+});
+
+router.put("/", authMiddleware, async (req, res) => {
+  const { success } = updateSchema.safeParse(req.body);
+  if (!success) {
+    res.status(411).json({
+      message: "Error while updating information",
+    });
+  }
+
+  await User.updateOne(
+    {
+      _id: req.userId,
+    },
+    req.body
+  );
+
+  res.json({
+    message: "Updated successfully",
+  });
+});
+
+
